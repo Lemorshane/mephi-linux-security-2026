@@ -1,0 +1,33 @@
+    1  mkdir -p ~/artifacts
+    2  sudo cp /etc/passwd ~/artifacts/
+    3  sudo cp /etc/shadow ~/artifacts/
+    4  sudo cp /etc/group ~/artifacts/
+    5  sudo find / -xdev -type f -perm /4000 -ls 2>/dev/null > ~/artifacts/suid_files.out
+    6  passwd user1
+    7  cp /usr/bin/cat /home/user1/mycat
+    8  chown root:root /home/user1/mycat
+    9  chmod u+s /home/user1/mycat
+   10  ls -l /home/user1/mycat
+   11  su - user1 -c 'cat /etc/shadow; echo "---"; /home/user1/mycat /etc/shadow'
+   12  stat /home/user1/mycat >> ~/artifacts/stat.out
+   13  cp /usr/bin/chown /home/user1/mychown
+   14  setcap cap_chown,cap_fowner+ep /home/user1/mychown
+   15  getcap /home/user1/mychown
+   16  su - user1 -c '
+  touch /tmp/testfile
+  echo "Обычный chown:"
+  chown root /tmp/testfile || echo "Ошибка (ожидаемо)"
+  echo "Наш mychown:"
+  /home/user1/mychown root /tmp/testfile && ls -l /tmp/testfile
+'
+   17  stat /home/user1/mychown >> ~/artifacts/stat.out
+   18  getcap /home/user1/mychown > ~/artifacts/getcap.out
+   19  echo "user1 ALL=(root) /usr/bin/timedatectl" > /etc/sudoers.d/user1_time
+   20  chmod 440 /etc/sudoers.d/user1_time
+   21  visudo -c
+   22  su - user1 -c 'sudo timedatectl set-time "2026-01-01 12:00:00"'
+   23  Indus308303
+   24  cp /etc/sudoers ~/artifacts/sudoers.out
+   25  cp /etc/sudoers.d/user1_time ~/artifacts/
+   26  echo M265252
+   27  history > ~/artifacts/history.out
